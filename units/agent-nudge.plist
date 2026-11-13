@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- macOS launchd template. Replace ALL-CAPS placeholders, copy to ~/Library/LaunchAgents/, then:
+     launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/agent-nudge.plist
+     Default backend (subscription): the service runs `claude -p`, which needs a sign-in launchd can see; make one
+     with `claude setup-token` and hand it over as CLAUDE_CODE_OAUTH_TOKEN (for example `launchctl setenv` from a login
+     job that reads your keychain). For NUDGE_BACKEND=api, do not paste the key here: point ProgramArguments at a small
+     wrapper of your own that reads it from your keychain, exports ANTHROPIC_API_KEY and execs the service.
+     Create ~/.claude/logs first. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>agent-nudge</string>
+  <key>ProgramArguments</key><array>
+    <string>/usr/bin/python3</string>
+    <string>HOME_DIR/agent-nudge/nudge/nudge_service.py</string>
+  </array>
+  <key>WorkingDirectory</key><string>YOUR_REPO_DIR</string>
+  <key>EnvironmentVariables</key><dict>
+    <key>NUDGE_MACHINE</key><string>macOS; BSD tools, no GNU coreutils</string>
+    <key>NUDGE_REPO</key><string>YOUR_REPO_DIR</string>
+  </dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>HOME_DIR/.claude/logs/nudge_service.log</string>
+  <key>StandardErrorPath</key><string>HOME_DIR/.claude/logs/nudge_service.log</string>
+</dict></plist>

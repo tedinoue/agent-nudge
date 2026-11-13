@@ -1,0 +1,20 @@
+# Linux systemd --user template. Default backend (subscription) uses your Claude Code login (~/.claude/.credentials.json);
+# for NUDGE_BACKEND=api put ANTHROPIC_API_KEY=... in ~/.config/agent-nudge.env (mode 600). Run mkdir -p ~/.claude/logs
+# (systemd won't create it), set NUDGE_REPO, then: systemctl --user daemon-reload && systemctl --user enable --now agent-nudge
+[Unit]
+Description=agent-nudge before-act service (127.0.0.1:8395)
+After=network-online.target
+
+[Service]
+WorkingDirectory=%h
+EnvironmentFile=-%h/.config/agent-nudge.env
+Environment="NUDGE_MACHINE=Linux, GNU tools"
+Environment=NUDGE_REPO=%h/YOUR_REPO
+ExecStart=/usr/bin/python3 %h/agent-nudge/nudge/nudge_service.py
+Restart=always
+RestartSec=30
+StandardOutput=append:%h/.claude/logs/nudge_service.log
+StandardError=append:%h/.claude/logs/nudge_service.log
+
+[Install]
+WantedBy=default.target
